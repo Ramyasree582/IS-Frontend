@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load timetable_extras %}
+
+{% block title %}Exam Detail{% endblock %}
+{% block topbar_title %}Exam Detail{% endblock %}
+
+{% block content %}
+<div class="page-stack">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        {{ exam.course_code }} – {{ exam.course_name }}
+      </h1>
+      <dl class="page-subtitle" style="margin-top: 0.5rem;">
+        <div>
+          <span class="muted">Date:</span> {{ exam.exam_date }}
+        </div>
+        <div>
+          <span class="muted">Time:</span> {{ exam.start_time }} – {{ exam.end_time }}
+        </div>
+        <div>
+          <span class="muted">Department:</span> {{ exam.department.code }}
+        </div>
+      </dl>
+    </div>
+    <div class="stack-sm">
+      <a href="{% url 'exams:auto_allocate_for_exam' exam.pk %}" class="btn btn-primary btn-sm">
+        Auto-allocate invigilators
+      </a>
+      {% if has_assignments %}
+        <button
+          type="button"
+          class="btn btn-outline btn-sm"
+          style="cursor: not-allowed; opacity: 0.7;"
+          title="Rooms cannot be changed after assignments are made."
+        >
+          Assign duties (rooms locked)
+        </button>
+      {% else %}
+        <a href="{% url 'exams:configure_exam_halls' exam.pk %}" class="btn btn-outline btn-sm">
+          Assign duties (select rooms)
+        </a>
+      {% endif %}
+      <a href="{% url 'exams:export_exam_allocation_csv' exam.pk %}" class="btn btn-outline btn-sm">
+        Export allocation (CSV)
+      </a>
+      <a href="{% url 'exams:exam_list' %}" class="btn btn-outline btn-sm">
+        Back to exams
+      </a>
+    </div>
+  </div>
+
+  <section class="card">
+    <h2 class="card-title">Halls &amp; assignments</h2>
+    <div class="table-wrapper" style="margin-top: 0.75rem;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Hall</th>
+            <th>Block</th>
+            <th>Required invigilators</th>
+            <th>Assigned invigilators</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for session in session_halls %}
+            <tr>
+              <td>{{ session.hall.name }}</td>
+              <td>{{ session.hall.block }}</td>
+              <td>{{ session.required_invigilators }}</td>
+              <td>
+                {% with hall_key=session.hall %}
+                  {% if assignments_by_hall|dict_get:hall_key %}
+                    <ul class="stack-sm">
+                      {% for assignment in assignments_by_hall|dict_get:hall_key %}
+                        <li class="justify-between">
+                          <div>
+                            <div style="font-size: 0.85rem;">
+                              {{ assignment.faculty.user.get_full_name|default:assignment.faculty.user.username }}
+                            </div>
+                            <div class="table-cell-muted">
+                              {{ assignment.faculty.department.code }}
+                            </div>
+                          </div>
+                          <span class="badge
+                            {% if assignment.status == 'PENDING_CONFIRMATION' %}badge-soft-amber
+                            {% elif assignment.status == 'CONFIRMED' %}badge-soft-emerald
+                            {% elif assignment.status == 'DECLINED' %}badge-soft-red
+                            {% elif assignment.status == 'CANCELLED' %}badge-soft-slate
+                            {% elif assignment.status == 'REASSIGNED' %}badge-soft-sky
+                            {% else %}badge-soft-slate{% endif %}">
+                            {{ assignment.status|title }}
+                          </span>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    <span class="muted">No assignments yet.</span>
+                  {% endif %}
+                {% endwith %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="4" class="table-empty">
+                No halls assigned for this exam.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

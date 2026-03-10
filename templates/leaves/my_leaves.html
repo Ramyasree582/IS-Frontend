@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}My Leaves{% endblock %}
+{% block topbar_title %}My Leaves{% endblock %}
+
+{% block content %}
+<div class="page-stack">
+  <div class="page-header">
+    <h1 class="page-title">My leaves</h1>
+    <a href="{% url 'leaves:apply_leave' %}" class="btn btn-primary btn-sm">
+      Apply for leave
+    </a>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>From</th>
+          <th>To</th>
+          <th>Status</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for l in leaves %}
+          <tr>
+            <td>{{ l.start_date }}</td>
+            <td>{{ l.end_date }}</td>
+            <td>
+              <span class="badge
+                {% if l.status == 'PENDING' %}badge-soft-amber
+                {% elif l.status == 'APPROVED' %}badge-soft-emerald
+                {% elif l.status == 'REJECTED' %}badge-soft-red
+                {% else %}badge-soft-slate{% endif %}">
+                {{ l.status|title }}
+              </span>
+            </td>
+            <td>{{ l.reason|default:'-' }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4" class="table-empty">
+              No leave requests yet.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

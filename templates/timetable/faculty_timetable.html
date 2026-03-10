@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load timetable_extras %}
+
+{% block title %}My Timetable{% endblock %}
+{% block topbar_title %}My Timetable{% endblock %}
+
+{% block content %}
+<div class="page-stack">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">My timetable</h1>
+      <p class="page-subtitle">
+        Weekly teaching slots that are considered when allocating invigilation duties.
+      </p>
+    </div>
+    <a href="{% url 'timetable:add_slot' %}" class="btn btn-primary btn-sm">
+      Add time slot
+    </a>
+  </div>
+
+  {% if approved_leaves %}
+    <div class="card">
+      <p class="card-title">Approved leave</p>
+      <ul class="card-body" style="margin-top: 0.25rem; padding-left: 1.25rem; list-style: disc;">
+        {% for leave in approved_leaves %}
+          <li>{{ leave.start_date }} to {{ leave.end_date }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Day</th>
+          {% for key, label in time_slots %}
+            <th>{{ label }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for day_code, day_label in days %}
+          <tr>
+            <th>{{ day_label }}</th>
+            {% for key, label in time_slots %}
+              {% with cell_slots=grid|dict_get:day_code|dict_get:key %}
+                <td style="vertical-align: top; text-align: center;">
+                  {% if cell_slots %}
+                    <div class="stack-sm">
+                      {% for s in cell_slots %}
+                        <div class="card-soft" style="border-radius: 6px; padding: 0.35rem 0.4rem; background: #f9fafb;">
+                          <div style="font-size: 0.8rem; font-weight: 600;">
+                            {{ s.course_code }} {{ s.course_name }}
+                          </div>
+                          {% if s.year %}
+                            <div class="table-cell-muted">Year: {{ s.year }}</div>
+                          {% endif %}
+                          {% if s.is_lab %}
+                            <span class="badge badge-soft-sky" style="margin-top: 0.15rem;">
+                              Lab
+                            </span>
+                          {% endif %}
+                          <div style="margin-top: 0.2rem;">
+                            <a
+                              href="{% url 'timetable:delete_slot' s.pk %}"
+                              class="btn btn-danger btn-sm"
+                              onclick="return confirm('Delete this slot?');"
+                            >
+                              Delete
+                            </a>
+                          </div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <span class="muted">—</span>
+                  {% endif %}
+                </td>
+              {% endwith %}
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

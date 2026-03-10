@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Faculty Dashboard{% endblock %}
+{% block topbar_title %}My Duties{% endblock %}
+
+{% block content %}
+<div class="page-stack">
+
+  <div>
+    <h1 class="page-title">My Invigilation Duties</h1>
+    <p class="page-subtitle">View your upcoming exam duties and confirm your availability.</p>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Course</th>
+          <th>Hall</th>
+          <th>Block</th>
+          <th>Status</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in assignments %}
+          <tr>
+            <td>{{ a.exam_session_hall.exam.exam_date }}</td>
+            <td>{{ a.exam_session_hall.exam.start_time }} – {{ a.exam_session_hall.exam.end_time }}</td>
+            <td>
+              <div>{{ a.exam_session_hall.exam.course_code }}</div>
+              <div class="table-cell-muted">{{ a.exam_session_hall.exam.course_name }}</div>
+            </td>
+            <td>{{ a.exam_session_hall.hall.name }}</td>
+            <td>{{ a.exam_session_hall.hall.block }}</td>
+            <td>
+              <span class="badge
+                {% if a.status == 'PENDING_CONFIRMATION' %}badge-soft-amber
+                {% elif a.status == 'CONFIRMED' %}badge-soft-emerald
+                {% elif a.status == 'DECLINED' %}badge-soft-red
+                {% elif a.status == 'CANCELLED' %}badge-soft-slate
+                {% elif a.status == 'REASSIGNED' %}badge-soft-sky
+                {% else %}badge-soft-slate{% endif %}">
+                {{ a.status|title }}
+              </span>
+            </td>
+            <td>
+              {% if a.status == 'PENDING_CONFIRMATION' %}
+                <div class="table-actions">
+                  <a href="{% url 'exams:confirm_assignment' a.pk %}" class="btn btn-success btn-sm">Confirm</a>
+                  <a href="{% url 'exams:decline_assignment' a.pk %}" class="btn btn-danger btn-sm"
+                     onclick="return confirm('Are you sure you are not available for this duty?');">
+                    Decline
+                  </a>
+                </div>
+              {% else %}
+                <div class="text-right muted">—</div>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" class="table-empty">No upcoming invigilation duties.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}

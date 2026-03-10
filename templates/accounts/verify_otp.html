@@ -1,0 +1,26 @@
+{% extends 'base_auth.html' %}
+
+{% block title %}Verify OTP{% endblock %}
+
+{% block auth_content %}
+<h2 class="auth-heading">Verify OTP</h2>
+<p class="auth-subheading">We sent a 6-digit code to your email. Enter it below to continue.</p>
+
+<form method="post" class="auth-form">
+  {% csrf_token %}
+
+  <div class="form-field">
+    <label for="id_code" class="form-label">OTP code</label>
+    <input type="text" name="code" id="id_code" maxlength="6" required>
+    <p class="form-help">The code is valid for 10 minutes.</p>
+  </div>
+
+  <button type="submit" class="btn btn-primary btn-full btn-lg">
+    Verify OTP
+  </button>
+
+  <div class="auth-footer">
+    <a href="{% url 'accounts:login' %}">Back to login</a>
+  </div>
+</form>
+{% endblock %}

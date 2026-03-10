@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Faculty Profiles (Batch Mode){% endblock %}
+{% block topbar_title %}Batch Create Faculty{% endblock %}
+
+{% block content %}
+<div class="page-stack">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Create faculty profiles (batch)</h1>
+      <p class="page-subtitle">
+        Enter faculty details row by row. New accounts and initial passwords will be generated and emailed automatically.
+      </p>
+    </div>
+  </div>
+
+  <form id="batch-form" method="post" class="stack-md">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="create">
+
+    <div class="table-wrapper">
+      <table class="table" id="faculty-table" style="table-layout:auto; min-width: 900px;">
+        <thead>
+          <tr>
+            <th>Employee ID</th>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Email</th>
+            <th>Department</th>
+            <th>Cabin block</th>
+            <th>Cabin room</th>
+            <th>Phone</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="faculty-tbody">
+          {% include 'accounts/partials/faculty_batch_row.html' with departments=departments row_index=0 only %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="justify-between">
+      <button type="button" id="add-row-btn" class="btn btn-outline btn-sm">
+        Add faculty
+      </button>
+      <button type="submit" class="btn btn-primary btn-sm">
+        Create faculty profiles
+      </button>
+    </div>
+  </form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  let rowCount = 1;
+  const tbody = document.getElementById('faculty-tbody');
+  const addRowBtn = document.getElementById('add-row-btn');
+
+  // Attach delete handler using event delegation
+  tbody.addEventListener('click', function (e) {
+    if (e.target.classList.contains('delete-row')) {
+      const row = e.target.closest('tr');
+      if (tbody.children.length > 1) {
+        row.remove();
+      } else {
+        alert('At least one row must remain.');
+      }
+    }
+  });
+
+  addRowBtn.addEventListener('click', function () {
+    const formData = new FormData();
+    formData.append('action', 'add_row');
+    formData.append('row_index', rowCount);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+    fetch("{% url 'accounts:create_faculty_batch' %}", {
+      method: "POST",
+      body: formData,
+    })
+      .then((rsp) => {
+        if (!rsp.ok) throw new Error('Network response was not ok');
+        return rsp.text();
+      })
+      .then((html) => {
+        // Trim aggressively
+        const cleaned = html.replace(/^\s+/, '').replace(/\s+$/, '');
+        if (!cleaned) {
+          console.error('Server returned empty response');
+          alert('Server returned an empty response. Check console for details.');
+          return;
+        }
+        // Use a temporary template element to parse HTML
+        const template = document.createElement('template');
+        template.innerHTML = cleaned;
+        const newRow = template.content.firstElementChild;
+        if (!newRow || newRow.tagName !== 'TR') {
+          // Fallback: directly insert HTML if parsing fails (since response is a plain <tr>)
+          console.warn('Parsing failed, falling back to direct insertion:', cleaned);
+          tbody.insertAdjacentHTML('beforeend', cleaned);
+        } else {
+          tbody.appendChild(newRow);
+        }
+        rowCount += 1;
+      })
+      .catch((err) => {
+        console.error('Failed to add row:', err);
+        alert('Failed to add row. Check console for details.');
+      });
+  });
+});
+</script>
+{% endblock %}

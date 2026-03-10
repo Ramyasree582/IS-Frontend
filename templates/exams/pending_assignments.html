@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Pending Invigilation Assignments{% endblock %}
+{% block topbar_title %}Pending Duties{% endblock %}
+
+{% block content %}
+<div class="page-stack">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Pending invigilation assignments</h1>
+      <p class="page-subtitle">
+        Approve or decline invigilation duties that are waiting for admin confirmation.
+      </p>
+    </div>
+  </div>
+
+  {% if assignments %}
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Faculty</th>
+            <th>Department</th>
+            <th>Exam</th>
+            <th>Hall</th>
+            <th>Assigned</th>
+            <th>Deadline</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in assignments %}
+            <tr>
+              <td>
+                {{ a.faculty.user.get_full_name|default:a.faculty.user.username }}
+              </td>
+              <td>
+                {{ a.faculty.department.code }}
+              </td>
+              <td>
+                <div>{{ a.exam_session_hall.exam.course_code }}</div>
+                {% if a.exam_session_hall.exam.course_name != a.exam_session_hall.exam.course_code %}
+                  <div class="table-cell-muted">
+                    {{ a.exam_session_hall.exam.course_name }}
+                  </div>
+                {% endif %}
+                <div class="table-cell-muted">
+                  {{ a.exam_session_hall.exam.exam_date }} {{ a.exam_session_hall.exam.start_time }}–{{ a.exam_session_hall.exam.end_time }}
+                </div>
+              </td>
+              <td>
+                {{ a.exam_session_hall.hall.name }} ({{ a.exam_session_hall.hall.block }})
+              </td>
+              <td>
+                {{ a.assigned_at|date:"Y-m-d H:i" }}
+              </td>
+              <td>
+                {{ a.confirmation_deadline|date:"Y-m-d H:i" }}
+              </td>
+              <td>
+                <div class="table-actions">
+                  <a href="{% url 'exams:confirm_assignment' a.pk %}" class="btn btn-primary btn-sm">
+                    Approve
+                  </a>
+                  <a href="{% url 'exams:decline_assignment' a.pk %}" class="btn btn-danger btn-sm">
+                    Decline
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="muted">No pending assignments.</p>
+  {% endif %}
+</div>
+{% endblock %}

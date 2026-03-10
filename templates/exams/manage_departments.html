@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Departments{% endblock %}
+{% block topbar_title %}Departments{% endblock %}
+
+{% block content %}
+<div class="page-stack" style="max-width: 640px;">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Manage departments</h1>
+      <p class="page-subtitle">
+        Add or remove academic departments used for exams and faculty profiles.
+      </p>
+    </div>
+  </div>
+
+  <section class="card">
+    <h2 class="card-title">Add department</h2>
+    <form method="post" class="form" style="margin-top: 0.75rem;">
+      {% csrf_token %}
+      <div class="form-field">
+        <label class="form-label" for="id_code">Code</label>
+        <input
+          type="text"
+          name="code"
+          id="id_code"
+          maxlength="10"
+          placeholder="CSE"
+          required
+          class="input"
+        >
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="id_name">Name</label>
+        <input
+          type="text"
+          name="name"
+          id="id_name"
+          placeholder="Department name"
+          required
+          class="input"
+        >
+      </div>
+      <button type="submit" class="btn btn-primary">
+        Add department
+      </button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2 class="card-title">Existing departments</h2>
+    <div class="table-wrapper" style="margin-top: 0.75rem;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in departments %}
+            <tr>
+              <td>{{ d.code }}</td>
+              <td>{{ d.name }}</td>
+              <td>
+                <form
+                  method="post"
+                  class="table-actions"
+                  onsubmit="return confirm('Delete this department?');"
+                >
+                  {% csrf_token %}
+                  <input type="hidden" name="delete_id" value="{{ d.id }}">
+                  <button type="submit" class="btn btn-danger btn-sm">
+                    Delete
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="3" class="table-empty">
+                No departments defined.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

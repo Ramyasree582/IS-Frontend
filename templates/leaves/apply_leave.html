@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Apply for Leave{% endblock %}
+{% block topbar_title %}Apply for Leave{% endblock %}
+
+{% block content %}
+<div class="page-stack" style="max-width: 640px;">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Apply for leave</h1>
+      <p class="page-subtitle">
+        Submit a leave request for upcoming dates. Approved leave is automatically considered during invigilation allocation.
+      </p>
+    </div>
+  </div>
+
+  <div class="form-card form-card-wide">
+    <form method="post" class="form">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="form-alert form-alert-error">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      {% for field in form %}
+        <div class="form-field">
+          <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="form-error">{{ field.errors|striptags }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="justify-between">
+        <button type="submit" class="btn btn-primary">
+          Submit
+        </button>
+        <a href="{% url 'leaves:my_leaves' %}" class="btn btn-outline">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Leave Requests{% endblock %}
+{% block topbar_title %}Leave Requests{% endblock %}
+
+{% block content %}
+<div class="page-stack">
+  <div class="page-header">
+    <h1 class="page-title">Leave requests</h1>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Faculty</th>
+          <th>From</th>
+          <th>To</th>
+          <th>Status</th>
+          <th>Reason</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for l in leaves %}
+          <tr>
+            <td>
+              {{ l.faculty.user.get_full_name|default:l.faculty.user.username }}
+            </td>
+            <td>{{ l.start_date }}</td>
+            <td>{{ l.end_date }}</td>
+            <td>
+              <span class="badge
+                {% if l.status == 'PENDING' %}badge-soft-amber
+                {% elif l.status == 'APPROVED' %}badge-soft-emerald
+                {% elif l.status == 'REJECTED' %}badge-soft-red
+                {% else %}badge-soft-slate{% endif %}">
+                {{ l.status|title }}
+              </span>
+            </td>
+            <td>{{ l.reason|default:'-' }}</td>
+            <td>
+              {% if l.status == 'PENDING' %}
+                <div class="table-actions">
+                  <a
+                    href="{% url 'leaves:approve_leave' l.pk %}"
+                    class="btn btn-primary btn-sm"
+                    onclick="return confirm('Approve this leave request?');"
+                  >
+                    Approve
+                  </a>
+                  <a
+                    href="{% url 'leaves:reject_leave' l.pk %}"
+                    class="btn btn-danger btn-sm"
+                    onclick="return confirm('Reject this leave request?');"
+                  >
+                    Reject
+                  </a>
+                </div>
+              {% else %}
+                <div class="text-right muted">
+                  No actions
+                </div>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="table-empty">
+              No leave requests.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

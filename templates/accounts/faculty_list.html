@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Faculty List{% endblock %}
+{% block topbar_title %}Faculty List{% endblock %}
+
+{% block content %}
+<div class="page-stack">
+  <div class="page-header">
+    <h1 class="page-title">Faculty list</h1>
+    <a href="{% url 'accounts:create_faculty_batch' %}" class="btn btn-primary btn-sm">
+      Create faculty (batch)
+    </a>
+  </div>
+
+  <form method="get" class="form-card form-card-wide">
+    <div class="form-field">
+      <label for="id_query" class="form-label">Search</label>
+      <input
+        type="text"
+        id="id_query"
+        name="q"
+        value="{{ q }}"
+        placeholder="Search by name, email, or employee ID"
+        class="input"
+      >
+    </div>
+    <button type="submit" class="btn btn-primary">
+      Search
+    </button>
+  </form>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Employee ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Department</th>
+          <th>Cabin</th>
+          <th>Phone</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in faculty %}
+          <tr>
+            <td>{{ f.employee_id }}</td>
+            <td>{{ f.user.get_full_name|default:f.user.username }}</td>
+            <td>{{ f.user.email }}</td>
+            <td>{{ f.department.code }}</td>
+            <td>
+              {% if f.cabin_block %}
+                {{ f.cabin_block }} {{ f.cabin_room }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
+            <td>{{ f.phone_number|default:"—" }}</td>
+            <td>
+              <div class="stack-sm">
+                <span class="badge {% if f.is_active %}badge-soft-emerald{% else %}badge-soft-slate{% endif %}">
+                  {% if f.is_active %}Active{% else %}Inactive{% endif %}
+                </span>
+                {% if f.must_change_password %}
+                  <span class="badge badge-soft-amber">
+                    First login
+                  </span>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" class="table-empty">
+              No faculty found.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

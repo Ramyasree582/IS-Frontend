@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Blocks Overview{% endblock %}
+{% block topbar_title %}Blocks & Rooms{% endblock %}
+
+{% block content %}
+<div class="page-stack">
+  <div class="page-header">
+    <h1 class="page-title">Blocks</h1>
+  </div>
+  <div class="card-grid">
+    {% for block in blocks %}
+      <a href="{% url 'exams:block_detail' block %}" class="action-card" style="flex-direction: column; text-align: center; padding: 1.25rem;">
+        <div class="action-card-icon blue" style="width: 48px; height: 48px; font-size: 1.1rem; font-weight: 700; border-radius: 999px;">
+          {{ block }}
+        </div>
+        <div class="action-card-text">Block {{ block }}</div>
+      </a>
+    {% empty %}
+      <p class="muted">
+        No blocks defined yet. Add rooms in <strong>Manage Blocks / Rooms</strong> first.
+      </p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

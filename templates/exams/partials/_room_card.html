@@ -1,0 +1,21 @@
+<div>
+  <div class="card" style="text-align: center; font-size: 0.8rem;">
+    <h3 class="card-title">{{ hall.name }}</h3>
+    {% if hall.floor %}
+      <div class="card-body" style="margin-top: 0.25rem;">
+        Floor: {{ hall.floor }}
+      </div>
+    {% endif %}
+    {% if tooltip %}
+      <div style="margin-top: 0.5rem;">
+        <span class="badge badge-soft-sky">
+          Cabins: {{ tooltip }}
+        </span>
+      </div>
+    {% else %}
+      <div class="muted" style="margin-top: 0.5rem;">
+        No faculty cabins mapped
+      </div>
+    {% endif %}
+  </div>
+</div>

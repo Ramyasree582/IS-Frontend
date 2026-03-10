@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block topbar_title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-stack">
+
+  <div>
+    <h1 class="page-title">Welcome back, {{ user.get_full_name|default:user.username }}</h1>
+    <p class="page-subtitle">Here's an overview of your invigilation management system.</p>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-card-icon blue">&#128197;</div>
+      <div class="stat-card-label">Upcoming Exams</div>
+      <div class="stat-card-value">{{ upcoming_exams_count }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon green">&#9745;</div>
+      <div class="stat-card-label">Exams Today</div>
+      <div class="stat-card-value">{{ today_exams_count }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon amber">&#9888;</div>
+      <div class="stat-card-label">Pending Confirmations</div>
+      <div class="stat-card-value">{{ pending_assignments_count }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon cyan">&#9823;</div>
+      <div class="stat-card-label">Total Faculty</div>
+      <div class="stat-card-value">
+        <a href="{% url 'accounts:faculty_list' %}">{{ total_faculty_count }}</a>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="action-grid">
+      <a href="{% url 'exams:upload_exam_timetable' %}" class="action-card">
+        <div class="action-card-icon blue">&#8679;</div>
+        <div>
+          <div class="action-card-text">Upload Exam Timetable</div>
+          <div class="action-card-desc">Import exam schedules from a file</div>
+        </div>
+      </a>
+      <a href="{% url 'exams:exam_list' %}" class="action-card">
+        <div class="action-card-icon slate">&#9783;</div>
+        <div>
+          <div class="action-card-text">Manage Exams</div>
+          <div class="action-card-desc">View, edit and assign duties</div>
+        </div>
+      </a>
+      <a href="{% url 'exams:pending_assignments' %}" class="action-card">
+        <div class="action-card-icon amber">&#9888;</div>
+        <div>
+          <div class="action-card-text">Pending Duties</div>
+          <div class="action-card-desc">Approve or decline assignments</div>
+        </div>
+      </a>
+      <a href="{% url 'accounts:create_faculty' %}" class="action-card">
+        <div class="action-card-icon green">&#43;</div>
+        <div>
+          <div class="action-card-text">Create Faculty</div>
+          <div class="action-card-desc">Add a new faculty member</div>
+        </div>
+      </a>
+      <a href="{% url 'accounts:create_faculty_batch' %}" class="action-card">
+        <div class="action-card-icon cyan">&#8862;</div>
+        <div>
+          <div class="action-card-text">Batch Create Faculty</div>
+          <div class="action-card-desc">Import multiple faculty at once</div>
+        </div>
+      </a>
+      <a href="{% url 'leaves:leave_requests_admin' %}" class="action-card">
+        <div class="action-card-icon red">&#9993;</div>
+        <div>
+          <div class="action-card-text">Leave Requests</div>
+          <div class="action-card-desc">Review and manage leave applications</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div>
+    <h2 class="section-title">Upcoming Exams</h2>
+    {% if upcoming_exams %}
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Course</th>
+              <th>Dept</th>
+              <th class="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for exam in upcoming_exams %}
+              <tr>
+                <td>{{ exam.exam_date }}</td>
+                <td>{{ exam.start_time }} – {{ exam.end_time }}</td>
+                <td>
+                  <div>{{ exam.course_code }}</div>
+                  {% if exam.course_name != exam.course_code %}
+                    <div class="table-cell-muted">{{ exam.course_name }}</div>
+                  {% endif %}
+                </td>
+                <td>{{ exam.department.code }}</td>
+                <td>
+                  <div class="table-actions">
+                    <a href="{% url 'exams:exam_detail' exam.pk %}" class="btn btn-outline btn-sm">View</a>
+                    <a href="{% url 'exams:configure_exam_halls' exam.pk %}" class="btn btn-primary btn-sm">Assign</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="card">
+        <p class="muted" style="text-align:center; padding: 1rem 0;">No upcoming exams scheduled.</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

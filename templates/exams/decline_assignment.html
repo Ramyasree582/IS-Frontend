@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Decline Assignment{% endblock %}
+{% block topbar_title %}Decline Assignment{% endblock %}
+
+{% block content %}
+<div class="page-stack" style="max-width: 720px;">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Decline assignment</h1>
+      <p class="page-subtitle">
+        Confirm decline for
+        <span style="font-weight: 600;">
+          {{ assignment.faculty.user.get_full_name|default:assignment.faculty.user.username }}
+        </span>
+        (<span class="muted">{{ assignment.faculty.department.code }}</span>).
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">Assignment details</h2>
+    <dl class="card-body stack-sm" style="margin-top: 0.5rem;">
+      <div>
+        <span class="muted">Exam:</span>
+        {{ assignment.exam_session_hall.exam.course_code }} – {{ assignment.exam_session_hall.exam.course_name }}
+      </div>
+      <div>
+        <span class="muted">Date / time:</span>
+        {{ assignment.exam_session_hall.exam.exam_date }} {{ assignment.exam_session_hall.exam.start_time }}–{{ assignment.exam_session_hall.exam.end_time }}
+      </div>
+      <div>
+        <span class="muted">Hall:</span>
+        {{ assignment.exam_session_hall.hall.name }} ({{ assignment.exam_session_hall.hall.block }})
+      </div>
+      <div>
+        <span class="muted">Assigned:</span>
+        {{ assignment.assigned_at|date:"Y-m-d H:i" }}
+      </div>
+      <div>
+        <span class="muted">Deadline:</span>
+        {{ assignment.confirmation_deadline|date:"Y-m-d H:i" }}
+      </div>
+    </dl>
+
+    <form method="post" class="form" style="margin-top: 0.75rem;">
+      {% csrf_token %}
+      <div class="form-field">
+        <label for="reason" class="form-label">Optional reason</label>
+        <textarea
+          name="reason"
+          id="reason"
+          rows="3"
+          placeholder="Optional reason for declining..."
+          class="input"
+        ></textarea>
+      </div>
+      <div class="justify-between">
+        <button type="submit" class="btn btn-danger">
+          Confirm decline
+        </button>
+        <a href="{% url 'exams:pending_assignments' %}" class="btn btn-outline">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

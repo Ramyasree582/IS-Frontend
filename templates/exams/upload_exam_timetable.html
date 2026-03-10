@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Exam Timetable{% endblock %}
+{% block topbar_title %}Upload Exam Timetable{% endblock %}
+
+{% block content %}
+<div class="page-stack" style="max-width: 640px;">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Upload exam timetable (CSV)</h1>
+      <p class="page-subtitle">
+        Upload a CSV file to create multiple exams at once. Each row represents one exam slot.
+      </p>
+    </div>
+  </div>
+
+  <section class="card">
+    <h2 class="card-title">Expected columns</h2>
+    <ul class="stack-sm" style="margin-top: 0.5rem; font-size: 0.85rem;">
+      <li><code>department_code</code> (e.g., CSE, CSM, ECE)</li>
+      <li><code>course_code</code></li>
+      <li><code>course_name</code></li>
+      <li><code>exam_type</code> (MID, END, TEST)</li>
+      <li><code>year</code> (1–4)</li>
+      <li><code>semester</code></li>
+      <li><code>exam_date</code> (YYYY-MM-DD)</li>
+      <li><code>start_time</code> (HH:MM)</li>
+      <li><code>end_time</code> (HH:MM)</li>
+    </ul>
+  </section>
+
+  <div class="form-card form-card-wide">
+    <form method="post" enctype="multipart/form-data" class="form">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="form-alert form-alert-error">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <div class="form-field">
+        {{ form.file.label_tag }}
+        {{ form.file }}
+        {% if form.file.errors %}
+          <div class="form-error">{{ form.file.errors|striptags }}</div>
+        {% endif %}
+      </div>
+
+      <div class="justify-between">
+        <button type="submit" class="btn btn-primary">
+          Upload exams
+        </button>
+        <a href="{% url 'exams:exam_list' %}" class="btn btn-outline">
+          Back to exams
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

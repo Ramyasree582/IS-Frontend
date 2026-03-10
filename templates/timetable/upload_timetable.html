@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Timetable{% endblock %}
+{% block topbar_title %}Upload Timetable{% endblock %}
+
+{% block content %}
+<div class="page-stack" style="max-width: 640px;">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Upload timetable (CSV)</h1>
+      <p class="page-subtitle">
+        Upload faculty teaching timetables in bulk. Each row should represent a single class slot.
+      </p>
+    </div>
+  </div>
+
+  <section class="card">
+    <h2 class="card-title">Expected columns</h2>
+    <p class="card-body" style="margin-top: 0.5rem;">
+      <code>employee_id</code>,
+      <code>day</code>,
+      <code>start_time</code>,
+      <code>end_time</code>,
+      <code>course_code</code>,
+      <code>course_name</code>,
+      <code>is_lab</code>
+    </p>
+  </section>
+
+  <div class="form-card form-card-wide">
+    <form method="post" enctype="multipart/form-data" class="form">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="form-alert form-alert-error">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <div class="form-field">
+        {{ form.file.label_tag }}
+        {{ form.file }}
+        {% if form.file.errors %}
+          <div class="form-error">{{ form.file.errors|striptags }}</div>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        Upload
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

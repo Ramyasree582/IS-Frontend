@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Invigilation Duties{% endblock %}
+{% block topbar_title %}Home{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px;">
+  <section class="hero">
+    <p class="hero-eyebrow">Faculty invigilation management</p>
+    <h1 class="hero-title">Streamline exam invigilation duties for your campus.</h1>
+    <p class="hero-text">
+      Plan exams, allocate fair invigilation duties, and keep faculty informed about
+      their schedules, availability, and approved leaves — all in one simple, secure portal.
+    </p>
+    <div class="hero-actions">
+      {% if user.is_staff %}
+        <a href="{% url 'exams:admin_dashboard' %}" class="btn btn-primary">Go to admin dashboard</a>
+      {% else %}
+        <a href="{% url 'exams:faculty_dashboard' %}" class="btn btn-primary">Go to faculty dashboard</a>
+      {% endif %}
+    </div>
+  </section>
+
+  <div class="card-grid" style="margin-top: 1.75rem;">
+    <article class="card">
+      <h2 class="card-title">For Admins</h2>
+      <p class="card-body">
+        Upload exam timetables, manage departments and halls, and auto-allocate
+        invigilation duties with visibility into pending confirmations.
+      </p>
+    </article>
+    <article class="card">
+      <h2 class="card-title">For Faculty</h2>
+      <p class="card-body">
+        View upcoming duties, confirm or decline assignments, maintain your weekly
+        timetable, and manage leave requests tied to exam schedules.
+      </p>
+    </article>
+    <article class="card">
+      <h2 class="card-title">Fair &amp; Transparent</h2>
+      <p class="card-body">
+        The platform considers department, existing classes, and approved leave
+        while distributing duties, making invigilation fair and traceable.
+      </p>
+    </article>
+  </div>
+</div>
+{% endblock %}
+
+{% block public_content %}
+<div class="container" style="max-width: 900px; margin: 0 auto;">
+  <section class="hero" style="margin-top: 1rem;">
+    <p class="hero-eyebrow">Faculty invigilation management</p>
+    <h1 class="hero-title">Streamline exam invigilation duties for your campus.</h1>
+    <p class="hero-text">
+      Plan exams, allocate fair invigilation duties, and keep faculty informed about
+      their schedules, availability, and approved leaves — all in one simple, secure portal.
+    </p>
+    <div class="hero-actions">
+      <a href="{% url 'accounts:login' %}" class="btn btn-primary">Login to continue</a>
+    </div>
+  </section>
+
+  <div class="card-grid" style="margin-top: 1.75rem;">
+    <article class="card">
+      <h2 class="card-title">For Admins</h2>
+      <p class="card-body">
+        Upload exam timetables, manage departments and halls, and auto-allocate
+        invigilation duties with visibility into pending confirmations.
+      </p>
+    </article>
+    <article class="card">
+      <h2 class="card-title">For Faculty</h2>
+      <p class="card-body">
+        View upcoming duties, confirm or decline assignments, maintain your weekly
+        timetable, and manage leave requests tied to exam schedules.
+      </p>
+    </article>
+    <article class="card">
+      <h2 class="card-title">Fair &amp; Transparent</h2>
+      <p class="card-body">
+        The platform considers department, existing classes, and approved leave
+        while distributing duties, making invigilation fair and traceable.
+      </p>
+    </article>
+  </div>
+</div>
+{% endblock %}

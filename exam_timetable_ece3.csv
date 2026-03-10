@@ -1,0 +1,5 @@
+department_code,course_code,course_name,exam_type,year,semester,exam_date,start_time,end_time
+ECE,ECE301,Analog Electronic Circuits,MID,3,1,2026-02-16,09:00,11:00
+ECE,ECE302,Digital Signal Processing,MID,3,1,2026-02-16,11:30,13:30
+ECE,ECE303,Electromagnetic Theory,MID,3,1,2026-02-16,14:00,16:00
+ECE,ECE304,Microprocessors and Microcontrollers,MID,3,1,2026-02-16,16:30,18:30

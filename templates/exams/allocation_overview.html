@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Allocation Overview{% endblock %}
+{% block topbar_title %}Allocation Overview{% endblock %}
+
+{% block content %}
+<div class="page-stack">
+  <div class="page-header">
+    <h1 class="page-title">Allocation overview</h1>
+  </div>
+
+  <form
+    method="get"
+    class="card"
+    style="max-width: 720px;"
+  >
+    <div class="stack-md">
+      <div class="form-field">
+        <label class="form-label" for="id_date">Exam date</label>
+        <select
+          name="date"
+          id="id_date"
+          class="input"
+        >
+          <option value="">All dates</option>
+          {% for d in dates %}
+            <option value="{{ d }}" {% if filter_date == d|stringformat:'s' %}selected{% endif %}>{{ d }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="id_block">Block</label>
+        <select
+          name="block"
+          id="id_block"
+          class="input"
+        >
+          <option value="">All blocks</option>
+          {% for b in blocks %}
+            <option value="{{ b }}" {% if filter_block == b %}selected{% endif %}>{{ b }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <button type="submit" class="btn btn-primary">
+          Apply filters
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Course</th>
+          <th>Hall</th>
+          <th>Block</th>
+          <th>Faculty</th>
+          <th>Dept</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in assignments %}
+          <tr>
+            <td>
+              {{ a.exam_session_hall.exam.exam_date }}
+            </td>
+            <td>
+              {{ a.exam_session_hall.exam.start_time }} – {{ a.exam_session_hall.exam.end_time }}
+            </td>
+            <td>
+              <div>{{ a.exam_session_hall.exam.course_code }}</div>
+              <div class="table-cell-muted">
+                {{ a.exam_session_hall.exam.course_name }}
+              </div>
+            </td>
+            <td>{{ a.exam_session_hall.hall.name }}</td>
+            <td>{{ a.exam_session_hall.hall.block }}</td>
+            <td>
+              {{ a.faculty.user.get_full_name|default:a.faculty.user.username }}
+            </td>
+            <td>{{ a.faculty.department.code }}</td>
+            <td>
+              <span class="badge
+                {% if a.status == 'PENDING_CONFIRMATION' %}badge-soft-amber
+                {% elif a.status == 'CONFIRMED' %}badge-soft-emerald
+                {% elif a.status == 'DECLINED' %}badge-soft-red
+                {% elif a.status == 'CANCELLED' %}badge-soft-slate
+                {% elif a.status == 'REASSIGNED' %}badge-soft-sky
+                {% else %}badge-soft-slate{% endif %}">
+                {{ a.status|title }}
+              </span>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="8" class="table-empty">
+              No allocations found for the selected filters.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

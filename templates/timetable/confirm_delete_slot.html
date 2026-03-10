@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Time Slot{% endblock %}
+{% block topbar_title %}Delete Slot{% endblock %}
+
+{% block content %}
+<div class="page-stack" style="max-width: 640px;">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Delete time slot</h1>
+      <p class="page-subtitle">
+        Are you sure you want to remove this slot from your timetable?
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <ul class="stack-sm">
+      <li><span class="muted">Day:</span> {{ slot.get_day_of_week_display }}</li>
+      <li><span class="muted">Time:</span> {{ slot.start_time }} - {{ slot.end_time }}</li>
+      <li><span class="muted">Course:</span> {{ slot.course_code }} {{ slot.course_name }}</li>
+    </ul>
+  </div>
+
+  <form method="post" class="justify-between">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">
+      Yes, delete
+    </button>
+    <a href="{% url 'timetable:faculty_timetable' %}" class="btn btn-outline">
+      Cancel
+    </a>
+  </form>
+</div>
+{% endblock %}

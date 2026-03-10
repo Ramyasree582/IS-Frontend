@@ -1,0 +1,49 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Invigilation System{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  </head>
+  <body>
+    <div class="auth-page">
+      <div class="auth-side">
+        <div class="auth-side-content">
+          <h1>Invigilation Duty Management</h1>
+          <p>
+            Streamline exam invigilation scheduling, faculty duty assignments,
+            and leave management — all from one secure portal.
+          </p>
+        </div>
+      </div>
+      <div class="auth-main">
+        <div class="auth-card">
+          <div class="auth-card-brand">
+            <div class="auth-card-brand-icon">IS</div>
+            <div class="auth-card-brand-text">Invigilation System</div>
+          </div>
+
+          {% if messages %}
+            <div class="messages" style="margin-bottom: 1rem;">
+              {% for message in messages %}
+                {% if message.tags == 'success' %}
+                  <div class="alert alert-success">{{ message }}</div>
+                {% elif message.tags == 'error' %}
+                  <div class="alert alert-error">{{ message }}</div>
+                {% elif message.tags == 'warning' %}
+                  <div class="alert alert-warning">{{ message }}</div>
+                {% else %}
+                  <div class="alert alert-info">{{ message }}</div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          {% block auth_content %}{% endblock %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

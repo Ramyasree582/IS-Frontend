@@ -1,0 +1,187 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Invigilation System{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  </head>
+  <body>
+
+    {% if user.is_authenticated %}
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <div class="sidebar-brand-icon">IS</div>
+          <div class="sidebar-brand-text">Invigilation</div>
+        </div>
+
+        {% if user.is_staff %}
+          <nav class="sidebar-section">
+            <div class="sidebar-section-title">Overview</div>
+            <a href="{% url 'exams:admin_dashboard' %}" class="sidebar-link active">
+              <span class="sidebar-link-icon">&#9673;</span> Dashboard
+            </a>
+          </nav>
+          <nav class="sidebar-section">
+            <div class="sidebar-section-title">Exam Management</div>
+            <a href="{% url 'exams:exam_list' %}" class="sidebar-link">
+              <span class="sidebar-link-icon">&#9783;</span> All Exams
+            </a>
+            <a href="{% url 'exams:upload_exam_timetable' %}" class="sidebar-link">
+              <span class="sidebar-link-icon">&#8679;</span> Upload Timetable
+            </a>
+            <a href="{% url 'exams:pending_assignments' %}" class="sidebar-link">
+              <span class="sidebar-link-icon">&#9888;</span> Pending Duties
+            </a>
+          </nav>
+          <nav class="sidebar-section">
+            <div class="sidebar-section-title">Configuration</div>
+            <a href="{% url 'exams:manage_departments' %}" class="sidebar-link">
+              <span class="sidebar-link-icon">&#9632;</span> Departments
+            </a>
+            <a href="{% url 'exams:manage_halls' %}" class="sidebar-link">
+              <span class="sidebar-link-icon">&#9635;</span> Blocks &amp; Rooms
+            </a>
+            <a href="{% url 'timetable:manage_courses' %}" class="sidebar-link">
+              <span class="sidebar-link-icon">&#9734;</span> Courses
+            </a>
+          </nav>
+          <nav class="sidebar-section">
+            <div class="sidebar-section-title">People</div>
+            <a href="{% url 'accounts:faculty_list' %}" class="sidebar-link">
+              <span class="sidebar-link-icon">&#9823;</span> Faculty List
+            </a>
+            <a href="{% url 'accounts:create_faculty' %}" class="sidebar-link">
+              <span class="sidebar-link-icon">&#43;</span> Create Faculty
+            </a>
+            <a href="{% url 'accounts:create_faculty_batch' %}" class="sidebar-link">
+              <span class="sidebar-link-icon">&#8862;</span> Batch Create
+            </a>
+            <a href="{% url 'leaves:leave_requests_admin' %}" class="sidebar-link">
+              <span class="sidebar-link-icon">&#9993;</span> Leave Requests
+            </a>
+          </nav>
+        {% else %}
+          <nav class="sidebar-section">
+            <div class="sidebar-section-title">Overview</div>
+            <a href="{% url 'exams:faculty_dashboard' %}" class="sidebar-link active">
+              <span class="sidebar-link-icon">&#9673;</span> My Duties
+            </a>
+          </nav>
+          <nav class="sidebar-section">
+            <div class="sidebar-section-title">Schedule</div>
+            <a href="{% url 'timetable:faculty_timetable' %}" class="sidebar-link">
+              <span class="sidebar-link-icon">&#9783;</span> My Timetable
+            </a>
+            <a href="{% url 'timetable:add_slot' %}" class="sidebar-link">
+              <span class="sidebar-link-icon">&#43;</span> Add Slot
+            </a>
+          </nav>
+          <nav class="sidebar-section">
+            <div class="sidebar-section-title">Leave</div>
+            <a href="{% url 'leaves:my_leaves' %}" class="sidebar-link">
+              <span class="sidebar-link-icon">&#9993;</span> My Leaves
+            </a>
+            <a href="{% url 'leaves:apply_leave' %}" class="sidebar-link">
+              <span class="sidebar-link-icon">&#43;</span> Apply Leave
+            </a>
+          </nav>
+        {% endif %}
+
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <div class="sidebar-avatar">
+              {{ user.first_name|first|default:"U" }}{{ user.last_name|first|default:"" }}
+            </div>
+            <div class="sidebar-user-info">
+              <div class="sidebar-user-name">{{ user.get_full_name|default:user.username }}</div>
+              <div class="sidebar-user-role">{% if user.is_staff %}Admin{% else %}Faculty{% endif %}</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="main-area">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')" aria-label="Menu">&#9776;</button>
+            <span class="topbar-title">{% block topbar_title %}Dashboard{% endblock %}</span>
+          </div>
+          <div class="topbar-right">
+            <form method="post" action="{% url 'accounts:logout' %}" style="margin:0;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-ghost btn-sm">Logout</button>
+            </form>
+          </div>
+        </header>
+
+        <div class="content">
+          {% if messages %}
+            <div class="messages">
+              {% for message in messages %}
+                {% if message.tags == 'success' %}
+                  <div class="alert alert-success">{{ message }}</div>
+                {% elif message.tags == 'error' %}
+                  <div class="alert alert-error">{{ message }}</div>
+                {% elif message.tags == 'warning' %}
+                  <div class="alert alert-warning">{{ message }}</div>
+                {% else %}
+                  <div class="alert alert-info">{{ message }}</div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          {% block content %}{% endblock %}
+        </div>
+
+        <footer class="app-footer">
+          <p>&copy; 2026 Invigilation System. All rights reserved.</p>
+        </footer>
+      </div>
+    </div>
+
+    {% else %}
+
+    <div class="public-layout">
+      <nav class="public-nav">
+        <a href="/" class="public-nav-brand">
+          <div class="public-nav-brand-icon">IS</div>
+          <div class="public-nav-brand-text">Invigilation System</div>
+        </a>
+        <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-sm">Login</a>
+      </nav>
+
+      <main class="public-main">
+        {% if messages %}
+          <div class="container">
+            <div class="messages">
+              {% for message in messages %}
+                {% if message.tags == 'success' %}
+                  <div class="alert alert-success">{{ message }}</div>
+                {% elif message.tags == 'error' %}
+                  <div class="alert alert-error">{{ message }}</div>
+                {% elif message.tags == 'warning' %}
+                  <div class="alert alert-warning">{{ message }}</div>
+                {% else %}
+                  <div class="alert alert-info">{{ message }}</div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        {% block public_content %}{% endblock %}
+      </main>
+
+      <footer class="public-footer">
+        <p>&copy; 2026 Invigilation System. All rights reserved.</p>
+      </footer>
+    </div>
+
+    {% endif %}
+
+  </body>
+</html>

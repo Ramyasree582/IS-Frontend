@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load timetable_extras %}
+
+{% block title %}Assign Duties - Select Rooms{% endblock %}
+{% block topbar_title %}Assign Duties{% endblock %}
+
+{% block content %}
+<div class="page-stack">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        Assign duties – {{ exam.course_code }} {{ exam.course_name }}
+      </h1>
+      <p class="page-subtitle">
+        Exam date: {{ exam.exam_date }} · Time: {{ exam.start_time }} – {{ exam.end_time }} · Department: {{ exam.department.code }}
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <form method="post" class="stack-md">
+      {% csrf_token %}
+
+      {% if blocks %}
+        <div class="stack-lg">
+          {% for b in blocks %}
+            {% with halls=halls_by_block|dict_get:b %}
+              <section class="stack-sm">
+                <h2 class="card-title">Block {{ b }}</h2>
+                <div class="card-grid">
+                  {% for hall in halls %}
+                    <label class="card" style="cursor: pointer;">
+                      <div class="justify-between">
+                        <div class="stack-sm">
+                          <div class="form-field">
+                            <div class="justify-between">
+                              <div class="stack-sm">
+                                <span style="font-weight: 600; font-size: 0.9rem;">
+                                  {{ hall.name }}
+                                </span>
+                                <span class="muted">
+                                  {% if hall.floor %}Floor: {{ hall.floor }}{% endif %}
+                                  {% if hall.capacity %}{% if hall.floor %} · {% endif %}Capacity: {{ hall.capacity }}{% endif %}
+                                </span>
+                              </div>
+                              <input
+                                type="checkbox"
+                                name="hall_ids"
+                                value="{{ hall.id }}"
+                                id="hall_{{ hall.id }}"
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-field" style="margin-top: 0.75rem;">
+                        <label for="req_{{ hall.id }}" class="form-label" style="font-size: 0.8rem;">
+                          Required invigilators
+                        </label>
+                        <input
+                          type="number"
+                          name="req_{{ hall.id }}"
+                          id="req_{{ hall.id }}"
+                          min="1"
+                          value="1"
+                          class="input"
+                          style="max-width: 4.5rem;"
+                        >
+                      </div>
+                    </label>
+                  {% empty %}
+                    <p class="muted">No rooms defined in this block.</p>
+                  {% endfor %}
+                </div>
+              </section>
+            {% endwith %}
+          {% endfor %}
+        </div>
+
+        <div class="justify-between">
+          <button type="submit" class="btn btn-primary">
+            Save rooms &amp; auto-assign duties
+          </button>
+          <a href="{% url 'exams:exam_detail' exam.pk %}" class="btn btn-outline">
+            Cancel
+          </a>
+        </div>
+      {% else %}
+        <p class="muted">
+          No blocks / rooms defined yet. Add rooms in <strong>Manage Blocks / Rooms</strong> first.
+        </p>
+      {% endif %}
+    </form>
+  </div>
+</div>
+{% endblock %}

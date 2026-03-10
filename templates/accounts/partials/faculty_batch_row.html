@@ -1,0 +1,39 @@
+<tr>
+  <td>
+    <input type="text" name="employee_id" class="input" required>
+  </td>
+  <td>
+    <input type="text" name="first_name" class="input" required>
+  </td>
+  <td>
+    <input type="text" name="last_name" class="input" required>
+  </td>
+  <td>
+    <input type="email" name="email" class="input" required>
+  </td>
+  <td>
+    <select name="department" class="input" required>
+      <option value="">-- Select Department --</option>
+      {% for dept in departments %}
+        <option value="{{ dept.id }}">{{ dept.code }} - {{ dept.name }}</option>
+      {% endfor %}
+    </select>
+  </td>
+  <td>
+    <input type="text" name="cabin_block" class="input">
+  </td>
+  <td>
+    <input type="text" name="cabin_room" class="input">
+  </td>
+  <td>
+    <input type="text" name="phone_number" class="input">
+  </td>
+  <td class="text-right">
+    <button
+      type="button"
+      class="delete-row btn btn-danger btn-sm"
+    >
+      ×
+    </button>
+  </td>
+</tr>

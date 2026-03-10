@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Time Slot{% endblock %}
+{% block topbar_title %}Add Time Slot{% endblock %}
+
+{% block content %}
+<div class="page-stack" style="max-width: 640px;">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Add time slot</h1>
+      <p class="page-subtitle">
+        Define a weekly teaching slot. These are used to avoid clashes when assigning invigilation duties.
+      </p>
+    </div>
+  </div>
+
+  <div class="form-card form-card-wide">
+    <form method="post" class="form">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="form-alert form-alert-error">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      {% for field in form %}
+        <div class="form-field">
+          <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.name == 'year' %}
+            <p class="form-help">
+              Choose the year (1, 2, 3, 4). The course list will be filtered by this.
+            </p>
+          {% endif %}
+          {% if field.errors %}
+            <div class="form-error">{{ field.errors|striptags }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="btn btn-primary">
+        Save
+      </button>
+    </form>
+  </div>
+</div>
+<script>
+  (function() {
+    const yearField = document.getElementById('id_year');
+    const codeField = document.getElementById('id_course_code');
+    const nameField = document.getElementById('id_course_name');
+
+    if (!codeField || !nameField) {
+      return;
+    }
+
+    function filterCoursesByYear() {
+      if (!yearField) {
+        return;
+      }
+      const selectedYear = yearField.value;  // "1", "2", ... or ""
+
+      for (let i = 0; i < codeField.options.length; i++) {
+        const opt = codeField.options[i];
+
+        // Leave the placeholder option visible
+        if (!opt.value) {
+          opt.hidden = false;
+          continue;
+        }
+
+        // Expect option text like "Y1 - CSE101 - Programming in C"
+        const text = opt.text || '';
+        const parts = text.split(' - ');
+        const yearPart = parts[0] || '';
+
+        if (!selectedYear) {
+          // If no year selected yet, hide all concrete courses
+          opt.hidden = true;
+        } else if (yearPart === 'Y' + selectedYear) {
+          opt.hidden = false;
+        } else {
+          opt.hidden = true;
+        }
+      }
+
+      // Reset selection and course name when year changes
+      codeField.selectedIndex = 0;
+      if (nameField) {
+        nameField.value = '';
+      }
+    }
+
+    function updateCourseName() {
+      const option = codeField.options[codeField.selectedIndex];
+      if (!option || !option.value) {
+        nameField.value = '';
+        return;
+      }
+
+      // Option text like "Y1 - CSE101 - Programming in C" -> name after second " - "
+      const text = option.text || '';
+      const parts = text.split(' - ');
+      if (parts.length >= 3) {
+        // Join everything after year and code as the course name
+        nameField.value = parts.slice(2).join(' - ').trim();
+      } else if (parts.length === 2) {
+        nameField.value = parts[1].trim();
+      } else {
+        nameField.value = text.trim();
+      }
+    }
+
+    if (yearField) {
+      yearField.addEventListener('change', filterCoursesByYear);
+    }
+    codeField.addEventListener('change', updateCourseName);
+
+    // Initialize on page load in case values are pre-selected
+    filterCoursesByYear();
+    updateCourseName();
+  })();
+</script>
+{% endblock %}
